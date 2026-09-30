@@ -1,0 +1,11 @@
+node_modules/
+dist/
+target/
+.tools/
+src-tauri/binaries/
+src-tauri/tauri.bundle-media.json
+src-tauri/gen/
+src-tauri/icons/android/
+src-tauri/icons/ios/
+*.log
+.DS_Store

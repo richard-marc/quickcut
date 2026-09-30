@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#141117" />
+    <title>QuickCut</title>
+    <style>html,body{margin:0;background:#141117;color:#f3edf6;font-family:Segoe UI,system-ui,sans-serif}#app{height:100dvh}button{font:inherit} [hidden]{display:none!important}</style>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <h1 class="wordmark">Quick<span>Cut</span></h1>
+        <div id="filename" class="filename" title="No video open">Untitled</div>
+        <div class="file-actions">
+          <button id="open" class="button" title="Open video (Ctrl / Cmd + O)">Open video</button>
+          <button id="export" class="button primary" title="Export (Ctrl / Cmd + E)" disabled>Export</button>
+        </div>
+      </header>
+      <main>
+        <section id="preview" class="preview" aria-label="Video preview">
+          <video id="video" preload="metadata" playsinline hidden></video>
+          <img id="frame" class="frame" alt="Current video frame" hidden />
+          <div id="empty" class="empty">
+            <svg width="56" height="68" viewBox="0 0 56 68" aria-hidden="true"><path d="M7 2h28l14 16v46H7zM35 2v17h14" /></svg>
+            <h2>Drop a video to start</h2>
+            <p>or open a file with <span class="open-shortcut">Ctrl + O</span></p>
+            <div class="formats">MP4 · MOV · MKV</div>
+          </div>
+          <div id="opening" class="opening" hidden>Opening video…</div>
+          <div id="drop-overlay" class="drop-overlay" hidden>Drop to open</div>
+          <div id="preview-notice" class="preview-notice" hidden></div>
+        </section>
+        <section class="transport" aria-label="Playback and editing controls">
+          <div class="playback-controls">
+            <button id="play" class="button icon-button" title="Play / pause (Space)" aria-label="Play" disabled><svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z" class="filled" /></svg></button>
+            <button id="previous-frame" class="button icon-button" title="Previous frame (Shift + Left)" aria-label="Previous frame" disabled><svg viewBox="0 0 24 24"><path d="M6 5v14m12-14-9 7 9 7z" /></svg></button>
+            <button id="next-frame" class="button icon-button" title="Next frame (Shift + Right)" aria-label="Next frame" disabled><svg viewBox="0 0 24 24"><path d="M18 5v14M6 5l9 7-9 7z" /></svg></button>
+            <div class="time"><span id="current-time">00:00:00.000</span><span class="time-divider">/</span><span id="duration">00:00:00.000</span></div>
+          </div>
+          <div class="edit-controls">
+            <button id="mark-in" class="button" title="Mark selection start (I)" disabled>Mark in <kbd>I</kbd></button>
+            <button id="mark-out" class="button" title="Mark selection end (O)" disabled>Mark out <kbd>O</kbd></button>
+            <button id="split" class="button" title="Split at playhead (S)" disabled>Split <kbd>S</kbd></button>
+            <button id="remove" class="button" title="Remove selected range (Delete)" disabled>Remove <kbd>Del</kbd></button>
+            <button id="keep" class="button" title="Keep range; press K again on another range to add it" disabled>Keep <kbd>K</kbd></button>
+          </div>
+        </section>
+        <section class="timeline-section" aria-label="Source timeline">
+          <div id="range-info" class="range-info" hidden><span id="selection-label"></span><button id="clear-selection" class="text-button" title="Clear selection (Escape)">Clear <kbd>Esc</kbd></button></div>
+          <canvas id="timeline" tabindex="0" role="slider" aria-label="Video timeline. Drag to select a range; drag either selection edge to resize it; click a clip to select it." aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"></canvas>
+          <div id="timeline-info" class="timeline-info" hidden><span id="clip-summary"></span><div><button id="undo" class="text-button" title="Undo (Ctrl / Cmd + Z)" disabled>Undo</button><button id="redo" class="text-button" title="Redo (Ctrl / Cmd + Shift + Z)" disabled>Redo</button><button id="fit" class="text-button" title="Fit timeline (F)">Fit</button></div></div>
+        </section>
+      </main>
+      <footer class="statusbar"><span id="status" role="status" aria-live="polite">Ready when you are</span><span class="shortcut-help">I / O&nbsp; Mark range <span>Delete&nbsp; Remove</span><span class="export-shortcut">Ctrl + E&nbsp; Export</span></span></footer>
+    </div>
+    <input id="browser-file" type="file" accept="video/*,.mp4,.mov,.mkv" hidden />
+    <dialog id="export-dialog" aria-labelledby="export-heading">
+      <form id="export-form">
+        <div class="dialog-heading"><h2 id="export-heading">Export video</h2><button type="button" id="close-export" class="text-button" aria-label="Close export">✕</button></div>
+        <p id="export-summary"></p>
+        <label for="container">Format</label>
+        <select id="container"><option value="mp4">MP4</option><option value="mov">MOV</option><option value="mkv">MKV</option></select>
+        <p class="export-note">Fast cut · original quality. Cuts snap to nearby keyframes. Video and audio stay in their original codecs.</p>
+        <p id="compatibility" class="compatibility" hidden></p>
+        <div class="dialog-actions"><button type="button" id="cancel-export-dialog" class="button">Cancel</button><button id="confirm-export" class="button primary" type="submit">Export</button></div>
+      </form>
+    </dialog>
+    <aside id="export-progress" class="export-progress" aria-label="Export progress" hidden>
+      <div><strong id="progress-label">Exporting…</strong><span id="progress-percent">0%</span></div>
+      <progress id="progress" max="100" value="0"></progress>
+      <div><span id="progress-detail">Preparing cuts</span><button id="cancel-job" class="text-button">Cancel</button></div>
+    </aside>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

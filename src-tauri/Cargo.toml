@@ -1,0 +1,22 @@
+[package]
+name = "quickcut"
+version = "0.1.0"
+edition = "2021"
+description = "A local keyboard-driven video cutter"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+base64 = "0.22"
+quickcut-media = { path = "media-core" }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = true
