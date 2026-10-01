@@ -38,3 +38,24 @@ export async function listenDrop(callback: (paths: string[] | null, hover: boole
   const { listen } = await import('@tauri-apps/api/event');
   return listen<{ paths: string[] | null; hover: boolean }>('media-drop', e => callback(e.payload.paths, e.payload.hover));
 }
+export async function listenOpen(callback: (path: string) => void, onError: (error: unknown) => void): Promise<() => void> {
+  const { listen } = await import('@tauri-apps/api/event');
+  let draining = false, requested = false, active = true;
+  const drain = async () => {
+    requested = true;
+    if (draining) return;
+    draining = true;
+    try {
+      while (requested && active) {
+        requested = false;
+        const path = await invoke<string | null>('take_open_file');
+        if (path && active) callback(path);
+      }
+    } finally { draining = false; }
+  };
+  // Listen before taking the startup path, so launches during initialization are kept.
+  const unlisten = await listen('media-open-request', () => { void drain().catch(onError); });
+  try { await drain(); }
+  catch (error) { active = false; unlisten(); throw error; }
+  return () => { active = false; unlisten(); };
+}

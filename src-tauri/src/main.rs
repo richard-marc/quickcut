@@ -13,12 +13,14 @@ use std::{
     time::Instant,
 };
 use tauri::{Emitter, Manager, State};
+mod launch;
 
 struct EditorState {
     allowed: Mutex<HashSet<PathBuf>>,
     tools: Mutex<Option<MediaTools>>,
     jobs: Mutex<HashMap<String, Arc<AtomicBool>>>,
     started: Instant,
+    pending_open: Arc<Mutex<Option<PathBuf>>>,
 }
 
 impl EditorState {
@@ -244,15 +246,44 @@ fn shell_ready(state: State<EditorState>, frontend_ms: f64) {
     }
 }
 
+#[tauri::command]
+fn take_open_file(state: State<EditorState>) -> Result<Option<String>, String> {
+    Ok(state
+        .pending_open
+        .lock()
+        .map_err(|_| "File-open state unavailable.")?
+        .take()
+        .map(|path| path.to_string_lossy().into_owned()))
+}
+
 fn main() {
     let started = Instant::now();
+    let cwd = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
+    let pending_open = Arc::new(Mutex::new(launch::video_path(std::env::args_os(), &cwd)));
+    let forwarded_open = pending_open.clone();
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(move |app, args, cwd| {
+            if let Some(path) =
+                launch::video_path(args.into_iter().map(Into::into), Path::new(&cwd))
+            {
+                if let Ok(mut pending) = forwarded_open.lock() {
+                    *pending = Some(path);
+                }
+                // The path remains queued even if the frontend is still starting.
+                let _ = app.emit("media-open-request", ());
+            }
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.unminimize();
+                let _ = window.set_focus();
+            }
+        }))
         .plugin(tauri_plugin_dialog::init())
         .manage(EditorState {
             allowed: Mutex::new(HashSet::new()),
             tools: Mutex::new(None),
             jobs: Mutex::new(HashMap::new()),
             started,
+            pending_open,
         })
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::DragDrop(event) = event {
@@ -286,7 +317,8 @@ fn main() {
             extract_frame,
             start_export,
             cancel_export,
-            shell_ready
+            shell_ready,
+            take_open_file
         ])
         .build(tauri::generate_context!())
         .expect("Could not create the QuickCut window")

@@ -1,6 +1,6 @@
 {
   "name": "quickcut",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
     "desktop": "node scripts/native.mjs dev",
     "desktop:build": "node scripts/native.mjs build",
     "desktop:check": "node scripts/native.mjs check",
+    "desktop:test": "node scripts/native.mjs desktop-test",
     "media:test": "node scripts/native.mjs test",
     "media:integration": "node scripts/native.mjs test -- --ignored --nocapture",
     "tools:bundle": "node scripts/bundle-media.mjs"

@@ -6,7 +6,7 @@ The window opens straight into the editor. No projects, accounts, network reques
 
 ## Download
 
-[Download QuickCut 0.1.0 for Windows (64-bit)](https://github.com/richard-marc/quickcut/releases/download/v0.1.0/QuickCut_0.1.0_x64-setup.exe), run the installer, and open QuickCut. FFmpeg and ffprobe are included; no compiler, Node.js, or separate media-tool installation is needed.
+[Download QuickCut 0.1.1 for Windows (64-bit)](https://github.com/richard-marc/quickcut/releases/download/v0.1.1/QuickCut_0.1.1_x64-setup.exe), run the installer, and open QuickCut. FFmpeg and ffprobe are included; no compiler, Node.js, or separate media-tool installation is needed.
 
 See [GitHub Releases](https://github.com/richard-marc/quickcut/releases/latest) for the latest version and release notes.
 
@@ -41,6 +41,8 @@ The media engine finds tools lazily, in this order: `QUICKCUT_FFMPEG`/`QUICKCUT_
 ## Workflow
 
 Drop MP4, MOV, or MKV onto the window, or press Ctrl/Cmd + O. Drag across the clip track to select a range, then Delete to remove it. Drag either selection edge to adjust that boundary while keeping the other in place. Repeat and press Ctrl/Cmd + E, Enter to export. Clicking a retained clip selects it immediately. Dragging the ruler scrubs without selecting a range.
+
+Windows **Open with → QuickCut** loads the selected video automatically. Launching `quickcut.exe "C:\Videos\clip.mp4"` works too. If QuickCut is already running, it opens the requested file in that window and brings it forward. Filenames with spaces and Unicode characters are supported.
 
 | Shortcut | Action |
 | --- | --- |
@@ -82,6 +84,7 @@ Fast Cut is the MVP. Requested selection times can move to nearby keyframes, and
 
 ```sh
 npm test
+npm run desktop:test
 npm run media:test
 npm run media:integration
 npm run desktop:check

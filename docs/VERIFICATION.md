@@ -10,6 +10,7 @@ The Windows desktop MVP is implemented and verified. The native window appears i
 | --- | --- |
 | TypeScript type check and production build | Pass |
 | Rust native compile check and release build | Pass |
+| Windows launch arguments: no file, absolute/relative paths, spaces/Unicode, argument separator | 5 passing desktop Rust tests |
 | Range operations, multiple Keep ranges, undo/redo, selection bounds | 6 passing TypeScript tests |
 | Metadata, fractional frame rate, container checks, range validation | 3 passing Rust unit tests |
 | Real MP4/MOV/MKV exports, open-GOP HEVC, PCM audio | Pass |
@@ -22,8 +23,11 @@ The Windows desktop MVP is implemented and verified. The native window appears i
 | Native file access, playback, frame stepping, global shortcuts, drag selection and clip selection | Pass |
 | Native Ctrl/Cmd + E → Enter, actual FFmpeg progress and output | Pass |
 | Bundled FFmpeg/ffprobe discovery with an empty process PATH | Pass |
+| Open with launch, existing-window forwarding, request during startup, missing-file recovery | Pass in the 0.1.1 release executable |
 
 Desktop automation used the real release executable and WebView2. Only the open/save dialog responses were stubbed in the test process; asset access, FFprobe, frame extraction, range edits, FFmpeg export, progress events, and final files were real. Actual native drag/drop integration is wired to Tauri window events; OS-level dragging from Explorer was not automated.
+
+For 0.1.1, separate launch checks passed actual filename arguments to the release executable without stubbing any dialogs or media commands. A filename containing spaces, an apostrophe, and Japanese characters opened and played automatically. Subsequent processes forwarded absolute and relative paths to the same editor and exited successfully. A request sent 100 ms after starting the primary process was retained through frontend initialization. A missing filename reported an error, and the next valid request recovered. Opening another source closed a stale export dialog; launching without a filename preserved the current selection. The Explorer menu itself was not automated; these checks exercised its executable-and-filename launch contract. There were no app console errors. The existing keyboard, selection, playback, and real 30-minute cut/export regression also passed on 0.1.1.
 
 ## Acceptance workflow
 
@@ -70,4 +74,4 @@ Intentional functional additions are selection times/clear, retained clip durati
 
 Concept: `C:/Users/richa/.codex/generated_images/01a0f40f-185b-7b91-abd1-be058ed758c1/exec-8530bbe6-8e9e-40bc-85c1-8e871711c9df.png`.
 
-Evidence directory on the development machine: `C:/Users/richa/.codex/visualizations/2026/09/30/01a0f40f-185b-7b91-abd1-be058ed758c1/`. It contains the original `native-*` evidence and the current `quickcut-empty.png`, `quickcut-loaded.png`, and `quickcut-qa.json`. QA fixtures, scripts, and screenshots are outside the source tree and are not included in Git.
+Evidence directory on the development machine: `C:/Users/richa/.codex/visualizations/2026/09/30/01a0f40f-185b-7b91-abd1-be058ed758c1/`. It contains the original `native-*` evidence and the current `quickcut-empty.png`, `quickcut-loaded.png`, `quickcut-qa.json`, `quickcut-open-with-loaded.png`, and `quickcut-open-with-qa.json`. QA fixtures, scripts, and screenshots are outside the source tree and are not included in Git.

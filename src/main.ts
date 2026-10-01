@@ -172,6 +172,7 @@ function createSession(duration: number): void {
   render();
 }
 function resetForOpen(name: string): number {
+  if (dialog.open) dialog.close();
   pause(); clearTimeout(seekTimer);
   const generation = ++openGeneration;
   openingAt = performance.now(); metrics.firstFrameMs = 0; metrics.probeMs = 0;
@@ -362,6 +363,7 @@ render();
 if (bridge.desktop) {
   requestAnimationFrame(() => requestAnimationFrame(() => { void bridge.reportShell(metrics.shellMs); }));
   void bridge.listenExport(exportProgress).catch(error => message(errorMessage(error), true));
+  void bridge.listenOpen(path => { void openPath(path); }, error => message(errorMessage(error), true)).catch(error => message(errorMessage(error), true));
   void bridge.listenDrop((paths, hover) => {
     $('drop-overlay').hidden = !hover;
     if (paths?.[0]) void openPath(paths[0]);

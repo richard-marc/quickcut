@@ -22,8 +22,8 @@ if (process.platform === 'win32' && existsSync(localMsvc)) {
   process.env.INCLUDE = [join(compiler, 'include'), ...['ucrt', 'shared', 'um'].map(dir => join(sdkBase, 'Include', sdkVersion, dir))].join(';');
 }
 const [action = 'dev', ...args] = process.argv.slice(2);
-if (action === 'test' || action === 'check' || action === 'fmt') {
-  const result = spawnSync('cargo', [action, '--manifest-path', action === 'test' ? 'src-tauri/media-core/Cargo.toml' : 'src-tauri/Cargo.toml', ...args], { stdio: 'inherit', windowsHide: true });
+if (action === 'test' || action === 'desktop-test' || action === 'check' || action === 'fmt') {
+  const result = spawnSync('cargo', [action === 'desktop-test' ? 'test' : action, '--manifest-path', action === 'test' ? 'src-tauri/media-core/Cargo.toml' : 'src-tauri/Cargo.toml', ...args], { stdio: 'inherit', windowsHide: true });
   if (result.error) { console.error(result.error.message); process.exit(1); }
   process.exit(result.status ?? 1);
 }
