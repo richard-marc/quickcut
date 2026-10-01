@@ -4,6 +4,12 @@ A desktop video cutter built with Rust, Tauri 2, vanilla TypeScript, and FFmpeg.
 
 The window opens straight into the editor. No projects, accounts, network requests, effects, asset scanning, waveform generation, or whole-video thumbnail/index generation. The source file is never modified.
 
+## Download
+
+[Download QuickCut 0.1.0 for Windows (64-bit)](https://github.com/richard-marc/quickcut/releases/download/v0.1.0/QuickCut_0.1.0_x64-setup.exe), run the installer, and open QuickCut. FFmpeg and ffprobe are included; no compiler, Node.js, or separate media-tool installation is needed.
+
+See [GitHub Releases](https://github.com/richard-marc/quickcut/releases/latest) for the latest version and release notes.
+
 ## Run
 
 The Windows release executable is `src-tauri/target/release/quickcut.exe`. The installer with FFmpeg included is generated under `src-tauri/target/release/bundle/nsis/`.
